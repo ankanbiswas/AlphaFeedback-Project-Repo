@@ -25,7 +25,14 @@ function [] = change_alphapower_time(handles,subdata)
     end
  
     AllTrialsMeanAlphaPow   = 10*(mean(TrialsAlphaPow,1)); % converting into db by multiplication of 10 : 10*log(a/b)
-    error_MeanAlphaPow      = (std(TrialsAlphaPow)/sqrt(size(TrialsAlphaPow,1)));
+    
+    if size(TrialsAlphaPow,1) == 1
+        error_MeanAlphaPow  = (std(TrialsAlphaPow)/sqrt(size(TrialsAlphaPow,1)));
+        error_MeanAlphaPow  =  repmat(error_MeanAlphaPow,1,size(TrialsAlphaPow,2));
+    else
+        error_MeanAlphaPow  = (std(TrialsAlphaPow)/sqrt(size(TrialsAlphaPow,1)));
+    end
+     
     time                    = 1:totTimeToPlot;
     cla(h_changeAlphaTime);
     axes(h_changeAlphaTime);

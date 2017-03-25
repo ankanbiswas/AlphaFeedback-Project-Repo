@@ -11,10 +11,11 @@ function Biofeedback_recording_interface
 
     % Creating editbox for taking the frequency components
     % Frequency Range for analysis 
+    
     uicontrol('Style','text',...
-                'Unit','Normalized',...
-                'Position',[xstart  0.85  0.14  0.1],...
-                'String','Subject Name');                  
+                        'Unit','Normalized',...
+                        'Position',[xstart  0.85  0.14  0.1],...
+                        'String','Subject Name');                  
 
     hsubjectname = uicontrol('style','edit',...
                         'String','test',...
@@ -22,9 +23,9 @@ function Biofeedback_recording_interface
                         'Position', [(xstart+boxwidth)/2.3   0.85-gap   boxwidth*1.2   boxwidth]);
     
     uicontrol('Style','text',...
-                'Unit','Normalized',...
-                'Position',[xstart  0.7  0.14  0.1],...
-                'String','Session No');                  
+                        'Unit','Normalized',...
+                        'Position',[xstart  0.7  0.14  0.1],...
+                        'String','Session No');                  
 
     hsessionNo = uicontrol('style','edit',...
                         'String','1',...
@@ -32,9 +33,9 @@ function Biofeedback_recording_interface
                         'Position', [(xstart+boxwidth)/2   0.7-gap   boxwidth   boxwidth]);
 
     uicontrol('Style','text',...
-                'Unit','Normalized',...
-                'Position',[xstart  yini  0.12  0.1],...
-                'String','Alpha Range');
+                        'Unit','Normalized',...
+                        'Position',[xstart  yini  0.12  0.1],...
+                        'String','Alpha Range');
 
     hAlphaMin = uicontrol('style','edit',...
                         'String','8',...
@@ -47,9 +48,9 @@ function Biofeedback_recording_interface
                         'Position', [xstart+(boxwidth)  yini-gap   boxwidth  boxwidth]);   
                     
     uicontrol('Style','text',...
-                'Unit','Normalized',...
-                'Position',[0.008  0.40  0.05  0.1],...
-                'String','Trial No');
+                        'Unit','Normalized',...
+                        'Position',[0.008  0.40  0.05  0.1],...
+                        'String','Trial No');
    
     hTrialNo = uicontrol('style','edit',...
                         'string','1',...
@@ -57,9 +58,9 @@ function Biofeedback_recording_interface
                         'Position', [0.01   0.40-gap   0.05   boxwidth]);
                     
     uicontrol('Style','text',...
-                'Unit','Normalized',...
-                'Position',[0.008+0.07  0.40  0.05  0.1],...
-                'String','Trial type');
+                        'Unit','Normalized',...
+                        'Position',[0.008+0.07  0.40  0.05  0.1],...
+                        'String','Trial type');
             
     hTrialTypes = uicontrol('style','edit',...
                         'string','1',...
@@ -118,8 +119,8 @@ function Biofeedback_recording_interface
                         'Callback',{@Callback_Exit}); 
                     
     % Creating plot axes
-    plot_xstart = xstart+(boxwidth*2.5); plot_ystart = ystart;
-    plot_delX = 1-ystart*4; plot_delY = 1-ystart*1.5;
+    plot_xstart             = xstart+(boxwidth*2.5); plot_ystart = ystart;
+    plot_delX               = 1-ystart*4; plot_delY = 1-ystart*1.5;
 
     plotPos                 = [plot_xstart,plot_ystart,plot_delX,plot_delY];
     [~,~,gridPos]           = getPlotHandles(4,1,plotPos,0.05,0.05,0);
@@ -150,27 +151,28 @@ function Biofeedback_recording_interface
     handles.IndChAlpTrials      = AnalysisPlotHandles_2(1,6);
     
     
-    drawnow  %Updates the figure
+    drawnow  % Updates the figure
 
-   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%####### Total No Of Trials ########%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%####### Total No Of Trials ########%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
-    firstSessTrialNo    = 12;
-    firstSessTrialTypes = [0 1 0 1 0 1 0 1 0 1 0 1];
+    % Creating the array of trialtypes
+    % Defining zero for the constant tone    (25% of the total trials),
+    % Defining one for the dependent tone    (50% of the total trials),
+    % Defining two for the independent tone  (25% of the total trial)
+    % Generating ones, twos and zeros accordingly 
     
-    tot_AllSessExF      = 48;
-    tot_trials          = 60; % defining total number of trials in a session
-    handles.tot_trials  = tot_trials;
+    firstSessTrialNo     = 12;
+    tot_trials           = 60; % defining total number of trials in a session
+    tot_AllSessExF       = tot_trials - firstSessTrialNo;
+    handles.tot_trials   = tot_trials;
     
-    % creating the array of trialtypes
-    % defining zero for the constant tone    (25% of the total trials),
-    % defining one for the dependent tone   (50% of the total trials),
-    % defining two for the independent tone (25% of the total trial)
-    % generating ones, twos and zeros accordingly 
-    
+    firstSessTrialTypes  = [zeros(firstSessTrialNo/4,1); ones(firstSessTrialNo-(firstSessTrialNo/4),1)]';      
     trialtype_AllSessExF = [zeros(tot_AllSessExF /4,1);ones(tot_AllSessExF /2,1);repmat(2,tot_AllSessExF /4,1)]';
-    for i = 1:100 % shuffing well the trialtypes
+    
+    for i = 1:100 % shuffling well the trialtypes
+        firstSessTrialTypes  = firstSessTrialTypes(randperm(firstSessTrialNo));  
         trialtype_AllSessExF = trialtype_AllSessExF(randperm(tot_AllSessExF ));
     end
     
@@ -180,40 +182,39 @@ function Biofeedback_recording_interface
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     start_value = 1;
-    end_value = tot_trials;
+    end_value   = tot_trials;
    
-    trialNo = start_value;
+    trialNo     = start_value;
     subjectname = get(hsubjectname,'string');
-    sessionNo = get(hsessionNo,'string');
-    tag = [subjectname '_ses_'  sessionNo];
+    sessionNo   = get(hsessionNo,'string');
+    tag         = [subjectname '_ses_'  sessionNo];
       
    
-   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%                  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%                  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
    % Initializing the parameters for the main programme
 
-    state = 0; % by default state is zero which would be updated according to the case
-    Fs = 500;
+    state           = 0; % by default state is zero which would be updated according to the case
+    Fs              = 500;
     sampleDurationS = 1;
-    timeValsS = 0:1/Fs:sampleDurationS-1/Fs;
-    timeStartS = 0;
+    timeValsS       = 0:1/Fs:sampleDurationS-1/Fs;
+    timeStartS      = 0;
     fullDisplayDurationS = 60;
     
     % defining default variables for the starttime
-    stcount = 1;
-    blcount = 1;
-%     EXPcount = 1;
-%     btcount = 1;
-    dataTemp  = [];
-    timeTemp  = [];
+    stcount     = 1;
+    blcount     = 1;
+%     EXPcount  = 1;
+%     btcount   = 1;
+    dataTemp    = [];
+    timeTemp    = [];
     
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%############### Calibrattion and runtime durations #######################$$%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Calibrattion and runtime durations %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     % defining default variables for the calibration 
-    calibrationDurationS = 10;
+    calibrationDurationS = 10; 
     runtimeDurationS     = 50;
 
     handles.fullDisplayDurationS =  fullDisplayDurationS;
@@ -237,15 +238,14 @@ function Biofeedback_recording_interface
     % Initialization for the soundtone feedback
     smoothKernel    = repmat(1/10,1,5);
     epochsToAvg     = length(smoothKernel);  
-
     Fsound          = 44100;  % need a high enough value so that alpha power below baseline can be played
     Fc              = 500; 
     Fi              = 800;
     
-    % opeing the RDA port as the GUI is shown
+    % Opening the RDA port as the GUI is shown
     [cfg,sock]      = rda_open;                      
     if sock == -1
-         hdr = 100;      
+        hdr = 100;      
     else
         hdr         = rda_header(cfg,sock); % rda_open would pass the sokect information
     end
@@ -259,7 +259,7 @@ function Biofeedback_recording_interface
      setfreqdata    = [];
      incrFactData   = [];
      
-   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%                  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     while 1
@@ -285,7 +285,7 @@ function Biofeedback_recording_interface
             timeStartS = 0; % dont do anything
 
         elseif state == 1 % Start
-            [raw, SQN]      = rda_message(sock,hdr); 
+            [raw, SQN] = rda_message(sock,hdr); 
             % get the time axis and plot one second of the data
             if stcount == 2
                 cla(hRawTrace);
@@ -324,23 +324,20 @@ function Biofeedback_recording_interface
             powerTemp   = zeros(51,fullDisplayDurationS);
             stcount     = stcount+1;
             cla(hRawTrace);
-%             cla(hRawTrace_2);
             cla(hTF);
 %             rda_close(sock); 
 %             powerTemp = zeros(51,fullDisplayDurationS);
 
 
         elseif state == 3 % Calibrate
-            [raw, SQN]      = rda_message(sock,hdr); 
+            [raw, SQN]  = rda_message(sock,hdr); 
             t_type      = trialtype(1,trialNo);
             str_trialno = num2str(trialNo);
             str_t_type  = num2str(t_type);
-            set(hTrialTypes,'string',str_t_type);
-            
+            set(hTrialTypes,'string',str_t_type);          
            
-            if blcount==2
+            if blcount == 2
                 cla(hRawTrace);
-%                 cla(hRawTrace_2);
                 cla(hTF);
                 BDstart = 1;
             end
@@ -349,38 +346,33 @@ function Biofeedback_recording_interface
             if timeStartS < calibrationDurationS
                 % Display PSD and T-F plot as before
                 % Save PSD data in a larger array
-                % compute alpha power
-                
+                % compute alpha power                
                 X           = raw.data; 
                 BDstop      = ((BDstart+Fs)-1);
                 timeToUse   =  timeStartS + timeValsS;
                 timeToPlot  = [timeTemp timeToUse];
                 datatoplot  = [dataTemp X];
                 timeStartS  = timeStartS+sampleDurationS; 
+                
                 blDataTemp(:,BDstart:BDstop) = X; 
-
-                blPowerTemp(:,timeStartS) = raw.meanPower;
-                ch_meanRawPower           = blPowerTemp;
-                ch_meanRawPower           = ch_meanRawPower(:,any(ch_meanRawPower));
-                freq = raw.freq;
+                blPowerTemp(:,timeStartS)    = raw.meanPower;
+                ch_meanRawPower              = blPowerTemp;
+                ch_meanRawPower              = ch_meanRawPower(:,any(ch_meanRawPower));
+                freq                         = raw.freq;
                 checkplot_time(state,handles,timeToPlot,datatoplot,freq,ch_meanRawPower); 
-                dataTemp                  = X(:,end);
-                timeTemp                  = timeToUse(end);
-                BDstart                   = BDstart+Fs;
+                dataTemp                     = X(:,end);
+                timeTemp                     = timeToUse(end);
+                BDstart                      = BDstart+Fs;
             
-                %% Cheking the data loss
-                SQN = [SQN SQN];
-             
+                SQN = [SQN SQN]; % Checking the data loss             
                 
             elseif timeStartS == calibrationDurationS
-                % compute the baseline values display baseline in a
-                % separate Save the entire calibarion data in a separate
-                % file
+                % Save the entire calibarion data in a separate file
 %               timeStartS=timeStartS+sampleDurationS;
                 dataTemp        = [];
                 timeTemp        = [];
                 blData          = blDataTemp;
-                rawBlPower      = blPowerTemp;                   %  Rawbaselinepower
+                rawBlPower      = blPowerTemp;             %  Rawbaselinepower
                 meanBlPower     = mean(rawBlPower,2);
                 logMeanBLPower  = conv2Log(meanBlPower);
                 ch_blpower      = (conv2Log(rawBlPower) - repmat(logMeanBLPower,1,calibrationDurationS));
@@ -407,9 +399,10 @@ function Biofeedback_recording_interface
                 
                 % saving the baseline data
                 
-                tagsave = [tag 'trial_' str_trialno 'ttype_' str_t_type];
+%                 tagsave = [tag 'trial_' str_trialno 'ttype_' str_t_type];
+                tagsave = [tag 'trial_' str_trialno];
                 save(['BF_BlData_' tagsave],'blData','rawBlPower'); % in future include specific file name
-                tag     =  [subjectname '_ses_'  sessionNo];
+%                 tag     =  [subjectname '_ses_'  sessionNo];
                 state = 0;
                 
                 %% Cheking the data loss
@@ -428,10 +421,9 @@ function Biofeedback_recording_interface
                 % Display PSD and T-F plot as before Save PSD data in a
                 % larger array compute alpha power
 
-                if (EXPcount==1)
+                if (EXPcount == 1)
                     % Getting current loop data: PN: the power data is
                     % already in log format
-                    
                     X           = raw.data; 
                     freq        = raw.freq;
                     power       = raw.meanPower;
@@ -486,10 +478,11 @@ function Biofeedback_recording_interface
                         setfreqdata         = stFreq;
                         incrFactData        = incrFact;
                     end
-                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5
+                    
+                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                     
                     checkplot_time_2(handles,ExptimeValsS,combData,freq,combPower,combRawPower); % plotting the total baselinedurationS+1 seconds of data
-%                     EXPcount = EXPcount+1; % I can potentially insert this here itself and aquire the data in the expcount 
+%                   EXPcount = EXPcount+1;  
                    
                     
                 elseif (EXPcount<(runtimeDurationS+1))
@@ -498,25 +491,24 @@ function Biofeedback_recording_interface
                     X = raw.data; % get the rawdata
                     % get the time axis which starts from baselineDurations
                    
-                     SQN        = [SQN SQN];
-                     dataExpEnd = ((dataExpBegin+Fs)-1);
-                     timeToUse  = EXPstart + timeValsS;
-                     timeToPlot = [ExptimeTemp timeToUse];
-                     EXPstart   = EXPstart + sampleDurationS;
-                     datatoplot = [ExptempData X]; % concatenating recent loops data with the previous loops data 
+                    SQN        = [SQN SQN];
+                    dataExpEnd = ((dataExpBegin+Fs)-1);
+                    timeToUse  = EXPstart + timeValsS;
+                    timeToPlot = [ExptimeTemp timeToUse];
+                    EXPstart   = EXPstart + sampleDurationS;
+                    datatoplot = [ExptempData X]; % concatenating recent loops data with the previous loops data 
 
                     EXPdataTemp(:,dataExpBegin:dataExpEnd) = X;
-                    % getting and plotting powerdata
-                    % here in each loop the power dat is collected 
+                    % Getting and plotting powerdata
+                    % In each loop the power data is collected 
                     exp_power       = raw.meanPower;
-                    combRawPower    = [combRawPower exp_power]; % combined all the powervals starting from baseline time itself
+                    combRawPower    = [combRawPower exp_power]; % combined all the powervals starting from baseline time 
                     rawstpower      = [rawstpower exp_power];
-                    ch_power        = conv2Log(exp_power)- logMeanBLPower; % being conver
+                    ch_power        = conv2Log(exp_power)- logMeanBLPower; % Calcualting changeinpower
                     EXPpowerTem(:,EXPstart) = ch_power;
                     ch_meanRawPower = EXPpowerTem;
                     ch_meanRawPower = ch_meanRawPower(:,any(ch_meanRawPower));
-                    freq = raw.freq;
-                    
+                    freq            = raw.freq;                    
                     
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 
@@ -548,6 +540,7 @@ function Biofeedback_recording_interface
                         setfreqdata         = [setfreqdata stFreq];
                         incrFactData        = [incrFactData incrFact];
                     end
+                    
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                     
                     checkplot_time_2(handles,timeToPlot,datatoplot,freq,ch_meanRawPower,combRawPower); 
@@ -565,8 +558,8 @@ function Biofeedback_recording_interface
                     EXPpowerTem = zeros(51,(calibrationDurationS + runtimeDurationS));   % returned back to initial powerterm
                     
                     
-                    %% Inserting the relaxation and sustainace quotient
-                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                    %% Calculating relaxation and sustenance quotient
+                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  msgbox    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                    
                     blPowerArray = mean(rawBlPower(alphaLowFreq:alphaHighFreq,3:calibrationDurationS),2);
@@ -576,81 +569,75 @@ function Biofeedback_recording_interface
                     fluct        = std(stPowerArray)/mean(stPowerArray);
                     susqut       = (int64(100*(1/fluct)));
                     
-                    % show a message box % for now showing only relaxation quotient but saving both the things
+                    % show a message box % for now showing only relaxation
+                    % quotient but saving both rexation and sustenance quotiont 
 %                     msgbox(['Your relaxation quotient is ' num2str(relquot)], 'EEG Demo', 'help');
-%                     set(h,'Position',[160 300 700 80]);
-
+%                    set(h,'Position',[160 300 700 80]);
                    
-                    %% Checking for data loss
-                    dl = unique(diff(SQN));
+                    dl = unique(diff(SQN));      % Checking for data loss
                     disp(dl);
                     
                     if dl ==1
-                    set(hDataLoss,'string','No Loss');
+                        set(hDataLoss,'string','No Loss');
                     else
-                    set(hDataLoss,'string','Yes');
+                        set(hDataLoss,'string','Yes');
                     end
             
-                    % saving data in a way (in each separte mat file way)
-                    tagsave = [tag 'trial_' str_trialno 'ttype_' str_t_type];
-                    save(['BF_ExData_' tagsave],'CombExpRawData','CombExpPowerData');              % save the data 
+                    % Saving data in a way (in each separate mat file)
+%                     tagsave = [tag 'trial_' str_trialno 'ttype_' str_t_type];
+                    tagsave = [tag 'trial_' str_trialno];
+%                     save(['BF_ExData_' tagsave],'CombExpRawData','CombExpPowerData'); % save the data 
                     state = 0;                                                          % returing to the default state                       
                     tag =  [subjectname '_ses_'  sessionNo];   
                     
                                                        
-                    %% saving the data in cell array structures:                    
+                    %% Saving the data in cell array structures:                 
                    
-                    %(1) trialno
-                    subdata{1,trialNo}  = trialNo;
-                    %(2) trialtypes
-                    subdata{2,trialNo}  = t_type;
-                    %(3) rawdata        (bl+st)
-                    subdata{3,trialNo}  = CombExpRawData;
-                    %(4) rawpower       (bl+st)
-                    subdata{4,trialNo}  = CombRawPowerData;
-                    %(5) changein power (bl+st)
-                    subdata{5,trialNo}  = CombExpPowerData;
-                    %(6) AlphachPowerData
-                    AlphachPowerData    =  CombExpPowerData(alphaLowFreq+1:alphaHighFreq+1,:);
-                    subdata{6,trialNo}  = AlphachPowerData;   
-                    %(7) incrfact
-                    subdata{7,trialNo}  = incrFactData;
-                    %(8) setfreqdata
-                    subdata{8,trialNo}  = setfreqdata;
-                    %(9) relquot
-                    subdata{9,trialNo}  = relquot;
-                    %(10) susquot
-                    subdata{10,trialNo} = susqut;
+        
+                    subdata{1,trialNo}  = trialNo;              %(1) trialno              
+                    subdata{2,trialNo}  = t_type;               %(2) trialtypes                   
+                    subdata{3,trialNo}  = CombExpRawData;       %(3) rawdata        (bl+st)                    
+                    subdata{4,trialNo}  = CombRawPowerData;     %(4) rawpower       (bl+st)                   
+                    subdata{5,trialNo}  = CombExpPowerData;     %(5) changein power (bl+st)                    
+                    AlphachPowerData    = CombExpPowerData(alphaLowFreq+1:alphaHighFreq+1,:); 
+                    subdata{6,trialNo}  = AlphachPowerData;     %(6) AlphachPowerData                     
+                    subdata{7,trialNo}  = incrFactData;         %(7) incrfact                    
+                    subdata{8,trialNo}  = setfreqdata;          %(8) setfreqdata                    
+                    subdata{9,trialNo}  = relquot;              %(9) relquot                   
+                    subdata{10,trialNo} = susqut;               %(10) susquot
                     
-                    save(['BF_' tag],'subdata');  % where tag is tag =  [subjectname '_ses_'  sessionNo];  
-                   
-                    %% analysing the data and plotting
+                    save(['BF_' tag],'subdata');             % where tag is tag =  [subjectname '_ses_'  sessionNo];  
+                    save(['BF_ExData_' tagsave],'subdata');  % saving the data as separate mat file after each trial
+                    
+                    %% Analysing the data and plotting
+                    
                     change_alphapower_time(handles,subdata);
                     change_alphapower_trials(handles,subdata);
-%                     SessionSummary(handles,sundata);
-                    
+                    msgbox(['Your relaxation quotient is ' num2str(relquot)], 'EEG Demo', 'help');
+             
                 end
                 
-                if(EXPcount == (runtimeDurationS+1))
-                    EXPcount    = 1;
-                    EXPstart    = (calibrationDurationS+1);
-                    combData    = [];
-                    combPower   = [];
-                    trialNo     = trialNo+1;
+                if (EXPcount == (runtimeDurationS+1))
+                    EXPcount        = 1;
+                    EXPstart        = (calibrationDurationS+1);
+                    dataExpBegin    = (Fs*EXPstart)+1;        % Reinitializing dataExpBegin
+                    combData        = [];
+                    combPower       = [];
+                    trialNo         = trialNo+1;
                     % Setting the trial no in the gui
                     set(hTrialNo,'string',num2str(trialNo));
-                    t_type      = trialtype(1,trialNo);
-                    str_t_type  = num2str(t_type);
+                    t_type          = trialtype(1,trialNo);
+                    str_t_type      = num2str(t_type);
                     set(hTrialTypes,'string',str_t_type);
                     
                     if trialNo == 13
-                        trialtolookfor = trialtype(1:12);
-                        ind_alpDepTrial = find(trialtolookfor==1);
-                        alpDepSetFreqData = [];
+                        trialtolookfor          = trialtype(1:12);
+                        ind_alpDepTrial         = find(trialtolookfor==1);
+                        alpDepSetFreqData       = [];
                         for i = 1:size(ind_alpDepTrial,2)
-                            indToExtract = ind_alpDepTrial(i);
-                            alpDepSetFreq = subdata{8,indToExtract};
-                            alpDepSetFreqData = [alpDepSetFreqData alpDepSetFreq];                     
+                            indToExtract        = ind_alpDepTrial(i);
+                            alpDepSetFreq       = subdata{8,indToExtract};
+                            alpDepSetFreqData   = [alpDepSetFreqData alpDepSetFreq];                     
                         end
                         alpDepSetFreqData = alpDepSetFreqData(randperm(size(alpDepSetFreqData,2)));
                     end
@@ -677,7 +664,7 @@ function Biofeedback_recording_interface
             break
         
         elseif state == 6 % Load the data and perform the analysis
-        
+            
             try
                 dataToAnalyse = load(['BF_' tag ],'-mat');
                 subdata = dataToAnalyse.subdata;
@@ -685,11 +672,11 @@ function Biofeedback_recording_interface
                 disp('The file is not in the current folder or in the matlab search path');
                 disp('Try loading the file manually');
                 [FileName,PathName] = uigetfile('*.mat','Select the MATLAB data file');
-                filetoanalyse = fullfile(PathName,FileName);
-                dataToAnalyse =load(filetoanalyse);
+                filetoanalyse       = fullfile(PathName,FileName);
+                dataToAnalyse       = load(filetoanalyse);
                 subdata = dataToAnalyse.subdata;          
             end
-
+            
             change_alphapower_time(handles,subdata);
             change_alphapower_trials(handles,subdata);
             state = 0; % Back to the initial stage
@@ -705,43 +692,33 @@ function Biofeedback_recording_interface
                     handles.ConsChAlpTrials     
                     handles.DepChAlpTrials      
                     handles.IndChAlpTrials ];
-                for i= 1:size(handlestoclear,1)
-                    cla(handlestoclear(i));
-                end
+            for i= 1:size(handlestoclear,1)
+                cla(handlestoclear(i));
+            end
             state = 0;
-        end
-        
-        drawnow;
-        
+        end        
+        drawnow;        
     end
     
-
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    Callbacks            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
-    
+       
 %% Callback functions
-
     function Callback_Start(~,~)
         state = 1;
     end
-
     function Callback_Stop(~,~)
             state = 2;
     end
-
     function Callback_Calibrate(~,~)
             state = 3;
     end
-
     function Callback_Run(~,~)
             state = 4;
-    end
-         
+    end         
     function Callback_Exit(~,~)
             state = 5;
-    end
-    
+    end    
     function Callback_Analysis(~,~)
             state = 6;
     end    
