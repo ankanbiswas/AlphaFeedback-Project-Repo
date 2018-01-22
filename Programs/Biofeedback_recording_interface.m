@@ -272,7 +272,7 @@ function Biofeedback_recording_interface
     %     Get the data and get the psd
     %     also, but dont plot
     
-%         [raw, SQN]      = rda_message(sock,hdr);    % reading rda message
+        [raw, SQN]      = rda_message(sock,hdr);    % reading rda message
         alphaLowFreq    = str2double(get(hAlphaMin,'string'));
         alphaHighFreq   = str2double(get(hAlphaMax,'string'));
         subjectname     = get(hsubjectname,'string');
@@ -285,7 +285,7 @@ function Biofeedback_recording_interface
             timeStartS = 0; % dont do anything
 
         elseif state == 1 % Start
-            [raw, SQN] = rda_message(sock,hdr); 
+%             [raw, SQN] = rda_message(sock,hdr); 
             % get the time axis and plot one second of the data
             if stcount == 2
                 cla(hRawTrace);
@@ -330,7 +330,7 @@ function Biofeedback_recording_interface
 
 
         elseif state == 3 % Calibrate
-            [raw, SQN]  = rda_message(sock,hdr); 
+%             [raw, SQN]  = rda_message(sock,hdr); 
             t_type      = trialtype(1,trialNo);
             str_trialno = num2str(trialNo);
             str_t_type  = num2str(t_type);
@@ -416,7 +416,7 @@ function Biofeedback_recording_interface
             end
 
         elseif state == 4 % run Experiment
-            [raw, SQN]      = rda_message(sock,hdr); 
+%             [raw, SQN]      = rda_message(sock,hdr); 
 %               if timeStartS < runtimeDurationS 
                 % Display PSD and T-F plot as before Save PSD data in a
                 % larger array compute alpha power
@@ -457,6 +457,7 @@ function Biofeedback_recording_interface
                         incrFact(EXPcount)  = mean(mean(combPower(alphaLowFreq:alphaHighFreq,end-epochsToAvg+1:end)'*smoothKernel(1,1)));
                         stFreq              = round(Fc + incrFact(EXPcount) * Fi);
                         soundTone           = sine_tone(Fsound ,1,stFreq);
+                        disp(stFreq);
                         sound(soundTone,Fsound);
                         setfreqdata         = stFreq;
                         incrFactData        = incrFact;
@@ -465,6 +466,7 @@ function Biofeedback_recording_interface
                         incrFact(EXPcount)  = 0; % there is no increment in the tone for the constant tone
                         stFreq              = Fc;
                         soundTone           = sine_tone(Fsound ,1,stFreq);
+                        disp(stFreq);
                         sound(soundTone,Fsound);
                         setfreqdata         = stFreq;
                         incrFactData        = incrFact;
@@ -472,8 +474,10 @@ function Biofeedback_recording_interface
                         disp('playing alpha independent tone');
 %                         incrFact(EXPcount)  = mean(mean(combPower(betaLowerLimit:betaUpperLimit,end-epochsToAvg+1:end)'*smoothKernel(1,1)));                        
 %                         stFreq              = round(Fc + incrFact(EXPcount) * Fi);
-                        stFreq              = setfreqtouse(EXPcount);        
+%                         stFreq              = setfreqtouse(EXPcount);  
+                        stFreq              = 500;  % Starting from base frequency
                         soundTone           = sine_tone(Fsound,1,stFreq);
+                        disp(stFreq);
                         sound(soundTone,Fsound);
                         setfreqdata         = stFreq;
                         incrFactData        = incrFact;
@@ -527,6 +531,7 @@ function Biofeedback_recording_interface
                         stFreq              = Fc;
                         incrFact(EXPcount)  = 0; % there is no increment in the tone for the constant tone
                         soundTone           = sine_tone(Fsound ,1,stFreq);
+                        disp(stFreq);
                         sound(soundTone,Fsound);
                         setfreqdata         = [setfreqdata stFreq];
                         incrFactData        = [incrFactData incrFact];
@@ -536,6 +541,7 @@ function Biofeedback_recording_interface
 %                         stFreq              = round(Fc + incrFact(EXPcount) * Fi);
                         stFreq              = setfreqtouse(EXPcount); 
                         soundTone           = sine_tone(Fsound ,1,stFreq);
+                        disp(stFreq);
                         sound(soundTone,Fsound);
                         setfreqdata         = [setfreqdata stFreq];
                         incrFactData        = [incrFactData incrFact];
@@ -611,7 +617,7 @@ function Biofeedback_recording_interface
                     
                     %% Analysing the data and plotting
                     
-                    change_alphapower_time(handles,subdata);
+%                     change_alphapower_time(handles,subdata);
                     change_alphapower_trials(handles,subdata);
                     msgbox(['Your relaxation quotient is ' num2str(relquot)], 'EEG Demo', 'help');
              
@@ -639,7 +645,9 @@ function Biofeedback_recording_interface
                             alpDepSetFreq       = subdata{8,indToExtract};
                             alpDepSetFreqData   = [alpDepSetFreqData alpDepSetFreq];                     
                         end
-                        alpDepSetFreqData = alpDepSetFreqData(randperm(size(alpDepSetFreqData,2)));
+                        for i= 1:100  % Shufling well 
+                            alpDepSetFreqData = alpDepSetFreqData(randperm(size(alpDepSetFreqData,2)));
+                        end
                     end
                     
 %                     t_type         = trialtype(1,trialNo);

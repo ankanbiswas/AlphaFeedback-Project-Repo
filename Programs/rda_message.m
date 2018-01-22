@@ -1,7 +1,7 @@
    
 function [raw,SQN] = rda_message(sock,hdr)
 %% Getting information for the header
-    Fs = hdr.Fs;  % getting the sampling frquency of the data   
+%     Fs = hdr.Fs;  % getting the sampling frquency of the data   
     resolution = hdr.resolutions(1,1);  % Assuming the resolution is same across the channels, change this if otherwise
     chanindx = hdr.chanindx;
     X = []; 
